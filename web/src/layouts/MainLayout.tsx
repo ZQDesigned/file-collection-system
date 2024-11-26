@@ -1,175 +1,202 @@
-import { FC, ReactNode, useState } from 'react'
-import { 
-  AppBar, 
-  Toolbar, 
-  Typography, 
-  Container, 
-  Box,
+import { FC, ReactNode, useState } from "react";
+import {
+  Layout,
+  Menu,
+  Badge,
   Button,
-  IconButton,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  useTheme,
-  useMediaQuery,
-  ListItemButton,
-  Badge
-} from '@mui/material'
-import { 
-  Menu as MenuIcon,
-  Home as HomeIcon,
-  AddCircle as AddCircleIcon,
-  Download as DownloadIcon
-} from '@mui/icons-material'
-import { Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { useAppSelector } from '../store'
-import { selectPendingTasksCount } from '../store/slices/downloadSlice'
+  Grid,
+  Card,
+  Avatar,
+  Dropdown,
+  MenuProps,
+} from "antd";
+import {
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  HomeOutlined,
+  PlusCircleOutlined,
+  DownloadOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import {
+  Outlet,
+  useNavigate,
+  useLocation,
+  NavigateFunction,
+  Location,
+} from "react-router-dom";
+import { useAppSelector } from "../store";
+import { selectPendingTasksCount } from "../store/downloadStore";
+
+const { Header, Sider, Content } = Layout;
+const { useBreakpoint } = Grid;
 
 const MainLayout: FC<{ children?: ReactNode }> = () => {
-  const [mobileOpen, setMobileOpen] = useState(false)
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
-  const navigate = useNavigate()
-  const location = useLocation()
-  const pendingTasksCount = useAppSelector(selectPendingTasksCount)
+  const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const pendingTasksCount = useAppSelector(selectPendingTasksCount);
+  const screens = useBreakpoint();
 
-  // 判断是否是提交页面
-  const isSubmitPage = location.pathname.startsWith('/submit/')
+  const isSubmitPage = location.pathname.startsWith("/submit/");
 
-  const menuItems = [
-    { text: '首页', path: '/', icon: <HomeIcon /> },
-    { text: '创建任务', path: '/create', icon: <AddCircleIcon /> },
-    { 
-      text: '下载任务', 
-      path: '/downloads', 
-      icon: <DownloadIcon />,
-      badge: pendingTasksCount
-    },
-  ]
-
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen)
-  }
-
-  const handleNavigation = (path: string) => {
-    navigate(path)
-    if (mobileOpen) {
-      setMobileOpen(false)
-    }
-  }
-
-  const drawer = !isSubmitPage && (
-    <List>
-      {menuItems.map((item) => (
-        <ListItem key={item.path} disablePadding>
-          <ListItemButton
-            onClick={() => handleNavigation(item.path)}
-            selected={location.pathname === item.path}
-            sx={{
-              '&.Mui-selected': {
-                backgroundColor: 'primary.light',
-                '&:hover': {
-                  backgroundColor: 'primary.light',
-                }
-              }
-            }}
-          >
-            <ListItemIcon sx={{ color: location.pathname === item.path ? 'primary.main' : 'inherit' }}>
-              {item.badge ? (
-                <Badge badgeContent={item.badge} color="error">
-                  {item.icon}
-                </Badge>
-              ) : (
-                item.icon
-              )}
-            </ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItemButton>
-        </ListItem>
-      ))}
-    </List>
-  )
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed);
+  };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <AppBar position="static">
-        <Toolbar>
-          {!isSubmitPage && isMobile && (
-            <IconButton
-              color="inherit"
-              edge="start"
-              onClick={handleDrawerToggle}
-              sx={{ mr: 2 }}
+    <Layout
+      style={{
+        height: "100vh",
+        backgroundColor: "#f0f2f5",
+        position: "relative",
+      }}
+    >
+      <HeaderBar
+        isSubmitPage={isSubmitPage}
+        toggleCollapsed={toggleCollapsed}
+        collapsed={collapsed}
+        navigate={navigate}
+        isMobile={!screens.md}
+      />
+      <Layout>
+        {!isSubmitPage && (
+          <>
+            <Sider
+              collapsible={!screens.sm}
+              collapsed={collapsed}
+              breakpoint="sm"
+              onCollapse={toggleCollapsed}
+              collapsedWidth={screens.sm ? 0 : 80}
+              style={{ backgroundColor: "#fff", position: "relative" }}
+              trigger={null}
             >
-              <MenuIcon />
-            </IconButton>
-          )}
-          <Typography 
-            variant="h6" 
-            component="div" 
-            sx={{ 
-              flexGrow: 1, 
-              cursor: isSubmitPage ? 'default' : 'pointer'
-            }}
-            onClick={() => !isSubmitPage && handleNavigation('/')}
-          >
-            文件收集系统
-          </Typography>
-          {!isSubmitPage && !isMobile && (
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              {menuItems.map((item) => (
-                <Button
-                  key={item.path}
-                  color="inherit"
-                  startIcon={
-                    item.badge ? (
-                      <Badge badgeContent={item.badge} color="error">
-                        {item.icon}
-                      </Badge>
-                    ) : (
-                      item.icon
-                    )
-                  }
-                  onClick={() => handleNavigation(item.path)}
-                  sx={{
-                    backgroundColor: location.pathname === item.path ? 'rgba(255, 255, 255, 0.1)' : 'transparent'
-                  }}
-                >
-                  {item.text}
-                </Button>
-              ))}
-            </Box>
-          )}
-        </Toolbar>
-      </AppBar>
-
-      {!isSubmitPage && (
-        <Box component="nav">
-          <Drawer
-            variant="temporary"
-            anchor="left"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
-            ModalProps={{
-              keepMounted: true,
-            }}
-            sx={{
-              display: { xs: 'block', sm: 'none' },
-              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: 240 },
+              <NavigationMenu
+                navigate={navigate}
+                location={location}
+                pendingTasksCount={pendingTasksCount}
+              />
+            </Sider>
+          </>
+        )}
+        <Content style={{ margin: "24px 16px", padding: 24 }}>
+          <Card
+            style={{
+              minHeight: "100%",
+              backgroundColor: "#fff",
+              borderRadius: 8,
             }}
           >
-            {drawer}
-          </Drawer>
-        </Box>
-      )}
+            <Outlet />
+          </Card>
+        </Content>
+      </Layout>
+    </Layout>
+  );
+};
 
-      <Container component="main" sx={{ mt: 4, mb: 4, flex: 1 }}>
-        <Outlet />
-      </Container>
-    </Box>
-  )
-}
+const NavigationMenu: FC<{
+  navigate: NavigateFunction;
+  location: Location;
+  pendingTasksCount: number;
+}> = ({ navigate, location, pendingTasksCount }) => {
+  const menuItems = [
+    { key: "/", icon: <HomeOutlined />, label: "首页" },
+    { key: "/create", icon: <PlusCircleOutlined />, label: "创建任务" },
+    {
+      key: "/downloads",
+      icon: (
+        <Badge count={pendingTasksCount} offset={[10, 0]}>
+          <DownloadOutlined />
+        </Badge>
+      ),
+      label: "下载任务",
+    },
+  ];
 
-export default MainLayout 
+  return (
+    <Menu
+      theme="light"
+      defaultSelectedKeys={[location.pathname]}
+      mode="inline"
+      style={{ paddingTop: 12 }}
+      items={menuItems.map((item) => ({
+        key: item.key,
+        icon: item.icon,
+        label: item.label,
+        onClick: () => navigate(item.key),
+      }))}
+    />
+  );
+};
+
+const HeaderBar: FC<{
+  isSubmitPage: boolean;
+  toggleCollapsed: () => void;
+  collapsed: boolean;
+  navigate: NavigateFunction;
+  isMobile: boolean;
+}> = ({ isSubmitPage, toggleCollapsed, collapsed, navigate, isMobile }) => {
+  const items: MenuProps["items"] = [
+    {
+      key: "1",
+      label: "个人设置",
+      icon: <UserOutlined />,
+      onClick: () => console.log("个人设置"),
+    },
+    {
+      key: "divider",
+      type: "divider",
+    },
+    {
+      key: "2",
+      label: "退出登录",
+      icon: <UserOutlined />,
+      onClick: () => console.log("退出登录"),
+    },
+  ];
+
+  return (
+    <Header
+      style={{
+        padding: 0,
+        backgroundColor: "#fff",
+        color: "#000",
+        width: "100%",
+        zIndex: 1,
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <div>
+        {!isSubmitPage && isMobile && (
+          <Button
+            type="text"
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={toggleCollapsed}
+            style={{ marginLeft: 16, color: "#000" }}
+          />
+        )}
+        <span
+          style={{
+            marginLeft: 16,
+            fontSize: 18,
+            color: "#000",
+          }}
+          onClick={() => !isSubmitPage && navigate("/")}
+        >
+          文件收集系统
+        </span>
+      </div>
+      <div style={{ marginRight: 16 }}>
+        <Dropdown menu={{ items, style: { width: 120 } }} trigger={["click"]}>
+          <Avatar style={{ cursor: "pointer" }} icon={<UserOutlined />} />
+        </Dropdown>
+      </div>
+    </Header>
+  );
+};
+
+export default MainLayout;

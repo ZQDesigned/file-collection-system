@@ -1,3 +1,5 @@
+import { DownloadTaskStatus } from "@/shared"
+
 // 模拟延迟
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -59,7 +61,7 @@ export interface DownloadTask {
   type: 'single' | 'all' // 单个提交还是全部提交
   submissionId?: string // 如果是单个提交，则需要提供submissionId
   settings: DownloadSettings
-  status: 'pending' | 'processing' | 'completed' | 'failed'
+  status: DownloadTaskStatus
   url?: string // 下载链接
   error?: string // 错误信息
   createdAt: string
@@ -121,7 +123,7 @@ export const mockApi = {
     const tasks = getTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
-    
+
     // 如果提供了 token，尝试更新现有提交
     if (token) {
       const submissionIndex = task.submissions.findIndex(s => s.accessToken === token)
@@ -142,7 +144,7 @@ export const mockApi = {
         return updatedSubmission
       }
     }
-    
+
     // 创建新提交
     const accessToken = token || Math.random().toString(36).substring(2, 15)
     const submission: Submission = {
@@ -158,7 +160,7 @@ export const mockApi = {
       accessToken,
       accessUrl: `/submission-view/${taskId}/${accessToken}`
     }
-    
+
     task.submissions.push(submission)
     saveTasks(tasks)
     return submission
@@ -180,7 +182,7 @@ export const mockApi = {
     const tasks = getTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
-    
+
     Object.assign(task, taskData)
     saveTasks(tasks)
     return task
@@ -192,10 +194,10 @@ export const mockApi = {
     const tasks = getTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
-    
+
     const submission = task.submissions.find(s => s.id === submissionId)
     if (!submission) throw new Error('Submission not found')
-    
+
     // 在实际项目中，这里会返回文件的下载链接或二进制数据
     alert('文件下载功能在后端实现')
     return submission.files
@@ -207,7 +209,7 @@ export const mockApi = {
     const tasks = getTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
-    
+
     // 在实际项目中，这里会返回一个压缩包的下载链接或二进制数据
     alert('文件打包下载功能将在后端实现')
     return task.submissions
@@ -227,29 +229,29 @@ export const mockApi = {
       type,
       submissionId,
       settings,
-      status: 'pending',
+      status: DownloadTaskStatus.Pending,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     }
-    
+
     // 模拟任务处理
     setTimeout(async () => {
       try {
-        newTask.status = 'processing'
+        newTask.status = DownloadTaskStatus.Processing
         await delay(3000) // 模拟处理时间
-        
+
         if (Math.random() > 0.8) { // 20%的概率失败
           throw new Error('模拟下载任务失败')
         }
-        
-        newTask.status = 'completed'
+
+        newTask.status = DownloadTaskStatus.Completed
         newTask.url = `https://example.com/download/${newTask.id}`
       } catch (error) {
-        newTask.status = 'failed'
+        newTask.status = DownloadTaskStatus.Failed
         newTask.error = error instanceof Error ? error.message : '未知错误'
       } finally {
         newTask.updatedAt = new Date().toISOString()
-        saveDownloadTasks(getDownloadTasks().map(t => 
+        saveDownloadTasks(getDownloadTasks().map(t =>
           t.id === newTask.id ? newTask : t
         ))
       }
@@ -288,37 +290,37 @@ export const mockApi = {
     const tasks = getDownloadTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Download task not found')
-    
-    task.status = 'pending'
+
+    task.status = DownloadTaskStatus.Pending
     task.error = undefined
     task.url = undefined
     task.updatedAt = new Date().toISOString()
-    
+
     saveDownloadTasks(tasks)
-    
+
     // 重新触发处理逻辑
     setTimeout(async () => {
       try {
-        task.status = 'processing'
+        task.status = DownloadTaskStatus.Processing
         await delay(3000)
-        
+
         if (Math.random() > 0.8) {
           throw new Error('模拟下载任务失败')
         }
-        
-        task.status = 'completed'
+
+        task.status = DownloadTaskStatus.Completed
         task.url = `https://example.com/download/${task.id}`
       } catch (error) {
-        task.status = 'failed'
+        task.status = DownloadTaskStatus.Failed
         task.error = error instanceof Error ? error.message : '未知错误'
       } finally {
         task.updatedAt = new Date().toISOString()
-        saveDownloadTasks(getDownloadTasks().map(t => 
+        saveDownloadTasks(getDownloadTasks().map(t =>
           t.id === task.id ? task : t
         ))
       }
     }, 1000)
-    
+
     return task
   },
 
@@ -328,10 +330,10 @@ export const mockApi = {
     const tasks = getTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
-    
+
     const submission = task.submissions.find(s => s.accessToken === accessToken)
     if (!submission) throw new Error('Submission not found')
-    
+
     return {
       task,
       submission
@@ -344,10 +346,10 @@ export const mockApi = {
     const tasks = getTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
-    
+
     const submissionIndex = task.submissions.findIndex(s => s.id === submissionId)
     if (submissionIndex === -1) throw new Error('Submission not found')
-    
+
     task.submissions.splice(submissionIndex, 1)
     saveTasks(tasks)
   },
@@ -358,10 +360,10 @@ export const mockApi = {
     const tasks = getTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
-    
+
     const submissionIndex = task.submissions.findIndex(s => s.accessToken === token)
     if (submissionIndex === -1) throw new Error('Submission not found')
-    
+
     task.submissions.splice(submissionIndex, 1)
     saveTasks(tasks)
   }
