@@ -1,5 +1,7 @@
 package com.lnyynet.filecollect.notification.config
 
+import org.apache.commons.codec.digest.HmacAlgorithms
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
@@ -9,12 +11,16 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.web.SecurityFilterChain
+import java.nio.charset.StandardCharsets
 import javax.crypto.spec.SecretKeySpec
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 class SecurityConfig {
+    
+    @Value("\${jwt.secret}")
+    private lateinit var secret: String
     
     @Bean
     fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -35,8 +41,7 @@ class SecurityConfig {
     
     @Bean
     fun jwtDecoder(): JwtDecoder {
-        val secret = "your-256-bit-secret".toByteArray()
-        val key = SecretKeySpec(secret, "HmacSHA256")
+        val key = SecretKeySpec(secret.toByteArray(StandardCharsets.UTF_8), HmacAlgorithms.HMAC_SHA_256.name)
         return NimbusJwtDecoder.withSecretKey(key).build()
     }
 } 

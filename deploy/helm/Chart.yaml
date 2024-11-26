@@ -1,0 +1,4 @@
+apiVersion: v2
+name: file-collect
+description: A file collection system
+version: 0.1.0 
