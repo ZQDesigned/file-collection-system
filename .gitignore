@@ -1,13 +1,77 @@
-# Build files
-/build/
-/out/
-/.gradle/
-/*.iml
-/.idea/
-/*.log
-/.DS_Store
-/*/bin/
-/*/gen/
+# Gradle specific files
+.gradle/
+build/
 
-# Specific to macOS
-*.DS_Store
+# Ignore IntelliJ IDEA project files
+*.iml
+.idea/
+out/
+
+# Ignore Eclipse project files
+.project
+.classpath
+.caches/
+.settings/
+.loadpath
+
+# Ignore MacOS files
+.DS_Store
+
+# Ignore Kotlin-specific files
+*.kotlin_module
+*.log
+
+# Ignore logs and other temporary files
+*.log
+*.lock
+*.tmp
+*.temp
+
+# Ignore Java-specific files
+*.class
+*.jar
+*.war
+*.ear
+
+# Ignore OS-specific files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore test reports
+/test-results/
+/test-output/
+/build/test-results/
+/build/reports/
+
+# Ignore dependency directories
+/build/
+*/build/
+
+# Ignore Gradle Wrapper files
+!gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties
+
+# Ignore compiled Kotlin/Java classes
+**/out/
+**/build/
+**/*.class
+
+# Ignore user-specific files
+.idea/
+*.iml
+.vscode/
+*.swp
+*~
+
+# Ignore local Gradle properties
+gradle.properties
+
+# Ignore Spring Boot specific files
+spring.log
+logs/
+*.log
