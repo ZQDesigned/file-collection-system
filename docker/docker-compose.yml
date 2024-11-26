@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    build: 
+      context: ../web
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - gateway-service
+      - notification-service
+      
+  gateway-service:
+    build: ../services/gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      
+  # ... 其他服务配置 
