@@ -1,0 +1,13 @@
+# Build files
+/build/
+/out/
+/.gradle/
+/*.iml
+/.idea/
+/*.log
+/.DS_Store
+/*/bin/
+/*/gen/
+
+# Specific to macOS
+*.DS_Store

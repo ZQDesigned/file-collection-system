@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+package com.lnyynet.filecollect.file;
+
+option java_multiple_files = true;
+option java_package = "com.lnyynet.filecollect.file.grpc";
+
+service FileService {
+  rpc UploadFile (UploadFileRequest) returns (FileInfo);
+  rpc GetFile (GetFileRequest) returns (FileContent);
+  rpc DeleteFile (DeleteFileRequest) returns (DeleteFileResponse);
+  rpc GeneratePresignedUrl (GenerateUrlRequest) returns (GenerateUrlResponse);
+}
+
+message UploadFileRequest {
+  bytes content = 1;
+  string filename = 2;
+  string content_type = 3;
+  string path = 4;
+}
+
+message FileInfo {
+  string id = 1;
+  string path = 2;
+  string url = 3;
+}
+
+message GetFileRequest {
+  string path = 1;
+}
+
+message FileContent {
+  bytes content = 1;
+  string content_type = 2;
+}
+
+message DeleteFileRequest {
+  string path = 1;
+}
+
+message DeleteFileResponse {
+  bool success = 1;
+}
+
+message GenerateUrlRequest {
+  string path = 1;
+  int32 expires_in = 2;  // 过期时间（秒）
+}
+
+message GenerateUrlResponse {
+  string url = 1;
+} 

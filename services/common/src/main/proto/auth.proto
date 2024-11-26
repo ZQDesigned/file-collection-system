@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package com.lnyynet.filecollect.auth;
+
+option java_multiple_files = true;
+option java_package = "com.lnyynet.filecollect.auth.grpc";
+
+service AuthService {
+  rpc ValidateToken (ValidateTokenRequest) returns (ValidateTokenResponse);
+  rpc GetUserInfo (GetUserInfoRequest) returns (UserInfo);
+}
+
+message ValidateTokenRequest {
+  string token = 1;
+}
+
+message ValidateTokenResponse {
+  bool valid = 1;
+  string username = 2;
+  repeated string roles = 3;
+}
+
+message GetUserInfoRequest {
+  string username = 1;
+}
+
+message UserInfo {
+  int64 id = 1;
+  string username = 2;
+  string role = 3;
+} 
