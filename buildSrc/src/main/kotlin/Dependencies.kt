@@ -12,6 +12,7 @@ object Versions {
     const val springCloud = "2023.0.0"
     const val springCloudGateway = "4.1.1"
     const val springCloudNetflix = "4.1.0"
+    const val springCloudEureka = "4.1.0"
 }
 
 object Deps {
@@ -52,4 +53,6 @@ object Deps {
     // Spring Cloud
     const val springCloudGateway = "org.springframework.cloud:spring-cloud-starter-gateway:${Versions.springCloudGateway}"
     const val springCloudNetflix = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${Versions.springCloudNetflix}"
+    const val springCloudEureka = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:${Versions.springCloudEureka}"
+    const val springCloudEurekaServer = "org.springframework.cloud:spring-cloud-starter-netflix-eureka-server:${Versions.springCloudEureka}"
 }

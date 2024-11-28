@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
@@ -21,7 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 class SecurityConfig(
-    private val userService: UserService
+    private val userService: UserService,
+    private val passwordEncoder: PasswordEncoder
 ) {
     
     @Bean
@@ -41,13 +41,10 @@ class SecurityConfig(
     }
     
     @Bean
-    fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
-    
-    @Bean
     fun authenticationProvider(): AuthenticationProvider {
         return DaoAuthenticationProvider().apply {
             setUserDetailsService(userService)
-            setPasswordEncoder(passwordEncoder())
+            setPasswordEncoder(passwordEncoder)
         }
     }
     

@@ -13,12 +13,18 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
 include(
     "services:common",
     "services:auth-service",
     "services:file-service",
     "services:task-service",
+    "services:notification-service",
     "services:gateway-service",
-    "services:discovery-service",
-    "services:notification-service"
+    "services:discovery-service"
 )
