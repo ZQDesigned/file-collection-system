@@ -6,7 +6,8 @@
     
     <!-- 控制台输出 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
             <includeMdcKeyName>traceId</includeMdcKeyName>
             <includeMdcKeyName>spanId</includeMdcKeyName>
             <customFields>{"service":"${springAppName}"}</customFields>
@@ -35,30 +36,10 @@
         <includeCallerData>true</includeCallerData>
         <neverBlock>true</neverBlock>
     </appender>
-    
-    <!-- 开发环境 -->
-    <springProfile name="dev">
-        <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="ASYNC_FILE"/>
-        </root>
-        <logger name="com.lnyynet.filecollect" level="DEBUG"/>
-    </springProfile>
-    
-    <!-- 测试环境 -->
-    <springProfile name="test">
-        <root level="INFO">
-            <appender-ref ref="CONSOLE"/>
-            <appender-ref ref="ASYNC_FILE"/>
-        </root>
-        <logger name="com.lnyynet.filecollect" level="DEBUG"/>
-    </springProfile>
-    
-    <!-- 生产环境 -->
-    <springProfile name="prod">
-        <root level="INFO">
-            <appender-ref ref="ASYNC_FILE"/>
-        </root>
-        <logger name="com.lnyynet.filecollect" level="INFO"/>
-    </springProfile>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="ASYNC_FILE"/>
+    </root>
+    <logger name="com.lnyynet.filecollect" level="INFO"/>
 </configuration> 
