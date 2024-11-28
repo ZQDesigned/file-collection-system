@@ -6,7 +6,7 @@ import { Grid, Typography } from 'antd';
 import { useDownloadStore } from '../store';
 import { HeaderBar, NavigationMenu } from './components';
 import { StyledCard, StyledContent, StyledLayout, StyledSider } from './style';
-import { DownloadTaskStatus, RoutePath } from '@/shared';
+import { DownloadTaskStatus, RoutePath } from '@/shared/enum';
 
 const { useBreakpoint } = Grid;
 
@@ -38,7 +38,7 @@ const usePageTitle = () => {
     case RoutePath.TaskSubmitBase:
       return '提交任务';
     default:
-      return '';
+      return '首页';
   }
 };
 

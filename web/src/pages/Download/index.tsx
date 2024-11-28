@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 import { ReloadOutlined } from '@ant-design/icons';
 import { LoadingOutlined } from '@ant-design/icons';
-import { Alert, Button, Input, Spin, Table } from 'antd';
+import { Button, Input, Spin, Table } from 'antd';
 
 import { useDownloadLogic } from './logic/useDownloadLogic';
 import { useTableColumn } from './logic/useTableColumn';
@@ -11,7 +11,6 @@ import { Header, HeaderLeft, HeaderRight, LastUpdated } from './style';
 const DownloadTasks: FC = () => {
   const {
     tasks,
-    error,
     lastUpdated,
     loading,
     setSelectedTask,
@@ -28,10 +27,6 @@ const DownloadTasks: FC = () => {
     handleDelete,
     setSelectedTask,
   });
-
-  if (error) {
-    return <Alert message={error} type="error" />;
-  }
 
   return (
     <>

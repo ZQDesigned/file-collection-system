@@ -30,7 +30,7 @@ const SubmissionDetail: FC = () => {
   const loadData = async () => {
     try {
       setLoading(true)
-      const taskData = await mockApi.getTask(taskId!)
+      const taskData = await mockApi.getUploadTaskDetail(taskId!)
       setTask(taskData)
       const submissionData = taskData.submissions.find(s => s.id === submissionId)
       if (!submissionData) {

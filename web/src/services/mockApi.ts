@@ -1,7 +1,13 @@
-import { DownloadTaskStatus } from "@/shared"
+import { DownloadTaskStatus } from "@/shared/enum"
+import type { DownloadSettings, DownloadTask, Submission, UploadTask } from "@/shared/types"
 
 // 模拟延迟
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+const enum LS_PATH {
+  UPLOAD = 'upload',
+  DOWNLOAD = 'download',
+}
 
 // 模拟文件类型列表
 export const fileTypes = [
@@ -11,72 +17,15 @@ export const fileTypes = [
   { id: '4', label: 'Excel表格', value: 'application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
 ]
 
-export interface FileType {
-  id: string
-  label: string
-  value: string
-}
-
-export interface FormField {
-  id: string
-  label: string
-  type: string
-  required: string
-}
-
-export interface Task {
-  id: string
-  title: string
-  description: string
-  deadline: string
-  fileTypes: string[]
-  maxFiles: number
-  formFields: FormField[]
-  createdAt: string
-  submissions: Submission[]
-}
-
-export interface Submission {
-  id: string
-  taskId: string
-  formData: Record<string, string>
-  files: {
-    name: string
-    size: number
-    type: string
-  }[]
-  submittedAt: string
-  accessToken: string
-  accessUrl: string
-}
-
-export interface DownloadSettings {
-  separateArchive: boolean // 是否每个人单独打包
-  namePattern: string // 命名规则，例如: "{name}-{studentId}"
-}
-
-export interface DownloadTask {
-  id: string
-  taskId: string // 关联的任务ID
-  type: 'single' | 'all' // 单个提交还是全部提交
-  submissionId?: string // 如果是单个提交，则需要提供submissionId
-  settings: DownloadSettings
-  status: DownloadTaskStatus
-  url?: string // 下载链接
-  error?: string // 错误信息
-  createdAt: string
-  updatedAt: string
-}
-
-// 从 localStorage 获取任务数据
-const getTasks = (): Task[] => {
-  const tasksJson = localStorage.getItem('tasks')
+// 从 localStorage 获取提交任务数据
+const getUploadTasks = (): UploadTask[] => {
+  const tasksJson = localStorage.getItem(LS_PATH.UPLOAD)
   return tasksJson ? JSON.parse(tasksJson) : []
 }
 
-// 保存任务数据到 localStorage
-const saveTasks = (tasks: Task[]) => {
-  localStorage.setItem('tasks', JSON.stringify(tasks))
+// 保存提交任务数据到 localStorage
+const saveUploadTasks = (tasks: UploadTask[]) => {
+  localStorage.setItem(LS_PATH.UPLOAD, JSON.stringify(tasks))
 }
 
 // 添加下载任务相关的API
@@ -88,30 +37,30 @@ export const mockApi = {
   },
 
   // 创建任务
-  createTask: async (taskData: Omit<Task, 'id' | 'createdAt' | 'submissions'>) => {
+  createUploadTask: async (taskData: Omit<UploadTask, 'id' | 'createdAt' | 'submissions'>) => {
     await delay(800)
-    const tasks = getTasks()
-    const newTask: Task = {
+    const tasks = getUploadTasks()
+    const newTask: UploadTask = {
       id: Date.now().toString(),
       ...taskData,
       createdAt: new Date().toISOString(),
       submissions: []
     }
     tasks.push(newTask)
-    saveTasks(tasks)
+    saveUploadTasks(tasks)
     return newTask
   },
 
   // 获取任务列表
-  getTasks: async () => {
+  getUploadTasks: async () => {
     await delay(500)
-    return getTasks()
+    return getUploadTasks()
   },
 
   // 获取任务详情
-  getTask: async (taskId: string) => {
+  getUploadTaskDetail: async (taskId: string) => {
     await delay(500)
-    const tasks = getTasks()
+    const tasks = getUploadTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
     return task
@@ -120,7 +69,7 @@ export const mockApi = {
   // 提交文件
   submitFiles: async (taskId: string, formData: any, files: File[], token?: string) => {
     await delay(1000)
-    const tasks = getTasks()
+    const tasks = getUploadTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
 
@@ -140,7 +89,7 @@ export const mockApi = {
           submittedAt: new Date().toISOString()
         }
         task.submissions[submissionIndex] = updatedSubmission
-        saveTasks(tasks)
+        saveUploadTasks(tasks)
         return updatedSubmission
       }
     }
@@ -162,36 +111,36 @@ export const mockApi = {
     }
 
     task.submissions.push(submission)
-    saveTasks(tasks)
+    saveUploadTasks(tasks)
     return submission
   },
 
   // 删除任务
-  deleteTask: async (taskId: string) => {
+  deleteUploadTask: async (taskId: string) => {
     await delay(500)
-    const tasks = getTasks()
+    const tasks = getUploadTasks()
     const index = tasks.findIndex(t => t.id === taskId)
     if (index === -1) throw new Error('Task not found')
     tasks.splice(index, 1)
-    saveTasks(tasks)
+    saveUploadTasks(tasks)
   },
 
   // 更新任务
-  updateTask: async (taskId: string, taskData: Partial<Omit<Task, 'id' | 'createdAt' | 'submissions'>>) => {
+  updateUploadTask: async (taskId: string, taskData: Partial<Omit<UploadTask, 'id' | 'createdAt' | 'submissions'>>) => {
     await delay(800)
-    const tasks = getTasks()
+    const tasks = getUploadTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
 
     Object.assign(task, taskData)
-    saveTasks(tasks)
+    saveUploadTasks(tasks)
     return task
   },
 
   // 下载单个提交的文件
   downloadSubmission: async (taskId: string, submissionId: string) => {
     await delay(500)
-    const tasks = getTasks()
+    const tasks = getUploadTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
 
@@ -206,7 +155,7 @@ export const mockApi = {
   // 下载任务的所有提交文件
   downloadAllSubmissions: async (taskId: string) => {
     await delay(800)
-    const tasks = getTasks()
+    const tasks = getUploadTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
 
@@ -327,7 +276,7 @@ export const mockApi = {
   // 添加通过访问令牌获取提交信息的方法
   getSubmissionByToken: async (taskId: string, accessToken: string) => {
     await delay(500)
-    const tasks = getTasks()
+    const tasks = getUploadTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
 
@@ -343,7 +292,7 @@ export const mockApi = {
   // 添加删除提交的方法
   deleteSubmission: async (taskId: string, submissionId: string) => {
     await delay(500)
-    const tasks = getTasks()
+    const tasks = getUploadTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
 
@@ -351,13 +300,13 @@ export const mockApi = {
     if (submissionIndex === -1) throw new Error('Submission not found')
 
     task.submissions.splice(submissionIndex, 1)
-    saveTasks(tasks)
+    saveUploadTasks(tasks)
   },
 
   // 通过 token 删除提交
   deleteSubmissionByToken: async (taskId: string, token: string) => {
     await delay(500)
-    const tasks = getTasks()
+    const tasks = getUploadTasks()
     const task = tasks.find(t => t.id === taskId)
     if (!task) throw new Error('Task not found')
 
@@ -365,7 +314,7 @@ export const mockApi = {
     if (submissionIndex === -1) throw new Error('Submission not found')
 
     task.submissions.splice(submissionIndex, 1)
-    saveTasks(tasks)
+    saveUploadTasks(tasks)
   }
 }
 

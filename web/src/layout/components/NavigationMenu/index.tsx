@@ -2,7 +2,7 @@ import type { FC } from "react";
 import type { NavigateFunction, Location } from "react-router-dom";
 import { Menu, Badge } from "antd";
 import { HomeOutlined, PlusCircleOutlined, DownloadOutlined } from "@ant-design/icons";
-import { RoutePath } from "@/shared";
+import { RoutePath } from "@/shared/enum";
 
 export interface NavigationMenuProps {
   navigate: NavigateFunction;

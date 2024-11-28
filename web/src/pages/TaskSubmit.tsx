@@ -71,7 +71,7 @@ const TaskSubmit: FC = () => {
     const loadData = async () => {
       try {
         setLoading(true)
-        const data = await mockApi.getTask(taskId)
+        const data = await mockApi.getUploadTaskDetail(taskId)
         setTask(data)
         
         // 如果有 token，尝试加载已有的提交

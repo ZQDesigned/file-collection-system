@@ -1,2 +1,2 @@
-export * from './taskStore'
-export * from './downloadStore'
+export * from './uploadTaskStore'
+export * from './downloadTaskStore'

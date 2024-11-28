@@ -1,8 +1,9 @@
-import { DownloadTask, mockApi } from "@/services/mockApi";
+import { mockApi } from "@/services/mockApi";
 import { useDownloadStore } from "@/store";
 import { useCallback, useState } from "react";
 import { message } from 'antd'
 import { useMount, useUnmount } from 'ahooks'
+import { DownloadTask } from "@/shared/types";
 
 let timer: number | null = null;
 
@@ -35,22 +36,15 @@ export const useDownloadLogic = () => {
   const [selectedTask, setSelectedTask] = useState<DownloadTask | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const [searchKw, setSearchKw] = useState<string | undefined>(undefined);
+  const [loading, toggleLoading] = useState(false);
 
   const {
     tasks,
-    loading,
-    error,
-    setLoading,
-    setError,
     setTasks,
     removeTask,
     updateTask,
   } = useDownloadStore(state => ({
     tasks: state.states.tasks,
-    loading: state.states.loading,
-    error: state.states.error,
-    setLoading: state.actions.setLoading,
-    setError: state.actions.setError,
     setTasks: state.actions.setTasks,
     removeTask: state.actions.removeTask,
     updateTask: state.actions.updateTask,
@@ -62,17 +56,15 @@ export const useDownloadLogic = () => {
         message.info('任务列表加载中，请稍后再试');
         return;
       }
-      // 轮询是不是应该静默？
-      setLoading(true);
+      toggleLoading(true);
       const data = await mockApi.getDownloadTasks();
       setLastUpdated(new Date().toLocaleString());
       setTasks(data);
-      setError(null);
     } catch (e) {
-      setError('加载任务列表失败');
       console.error(e);
+      setTasks([])
     } finally {
-      setLoading(false);
+      toggleLoading(false);
     }
   };
 
@@ -132,7 +124,6 @@ export const useDownloadLogic = () => {
   return {
     tasks: searchKw ? tasks.filter(task => task.id.includes(searchKw)) : tasks,
     loading,
-    error,
     lastUpdated,
     handleSearch,
     setSelectedTask,

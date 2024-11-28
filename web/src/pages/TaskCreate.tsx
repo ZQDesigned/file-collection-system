@@ -50,17 +50,16 @@ const TaskCreate: FC = () => {
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
-  const { control, handleSubmit, watch, setValue, setError } =
-    useForm<TaskFormData>({
-      defaultValues: {
-        title: '',
-        description: '',
-        deadline: '',
-        fileTypes: [],
-        maxFiles: 1,
-        formFields: [],
-      },
-    });
+  const { control, handleSubmit, watch, setValue } = useForm<TaskFormData>({
+    defaultValues: {
+      title: '',
+      description: '',
+      deadline: '',
+      fileTypes: [],
+      maxFiles: 1,
+      formFields: [],
+    },
+  });
   // const dispatch = useAppDispatch()
   const formFields = watch('formFields');
   const navigate = useNavigate();
@@ -101,7 +100,7 @@ const TaskCreate: FC = () => {
       }
 
       setLoading(true);
-      const result = await mockApi.createTask(data);
+      const result = await mockApi.createUploadTask(data);
       console.log('Task created:', result);
       navigate('/');
     } catch (error) {

@@ -19,7 +19,6 @@ export const StyledContent = styled(Content)`
 `;
 
 export const StyledCard = styled(Card)`
-  min-height: 100%;
   background-color: #fff;
   border-radius: 8px;
 `; 

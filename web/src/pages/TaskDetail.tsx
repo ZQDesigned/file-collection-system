@@ -63,7 +63,7 @@ const TaskDetail: FC = () => {
   const loadTask = async () => {
     try {
       setLoading(true)
-      const data = await mockApi.getTask(taskId!)
+      const data = await mockApi.getUploadTaskDetail(taskId!)
       setTask(data)
     } catch (err) {
       setError('加载任务失败')
@@ -74,7 +74,7 @@ const TaskDetail: FC = () => {
 
   const handleDelete = async () => {
     try {
-      await mockApi.deleteTask(taskId!)
+      await mockApi.deleteUploadTask(taskId!)
       navigate('/')
     } catch (err) {
       setError('删除任务失败')

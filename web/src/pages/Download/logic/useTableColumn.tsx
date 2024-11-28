@@ -15,7 +15,7 @@ import {
   Typography,
 } from 'antd';
 
-import { DownloadTask } from '@/services/mockApi';
+import { DownloadTask } from '@/shared/types';
 
 const statusColors = {
   pending: 'orange',
@@ -30,7 +30,6 @@ const statusLabels = {
   completed: '已完成',
   failed: '失败',
 } as const;
-
 
 export const useTableColumn: (params: {
   handleRetry: (task: DownloadTask) => void;

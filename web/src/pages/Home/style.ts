@@ -9,11 +9,6 @@ export const Header = styled.div`
   border-radius: 4px;
 `;
 
-export const LastUpdated = styled.span`
-  font-size: 14px;
-  color: #595959;
-`;
-
 export const HeaderRight = styled.div`
   display: flex;
   align-items: center;

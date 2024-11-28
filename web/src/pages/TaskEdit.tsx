@@ -47,7 +47,7 @@ const TaskEdit: FC = () => {
         setLoading(true)
         const [types, task] = await Promise.all([
           mockApi.getFileTypes(),
-          mockApi.getTask(taskId!)
+          mockApi.getUploadTaskDetail(taskId!)
         ])
         setAvailableFileTypes(types)
         reset({
@@ -71,7 +71,7 @@ const TaskEdit: FC = () => {
   const onSubmit = async (data: TaskFormData) => {
     try {
       setSaving(true)
-      await mockApi.updateTask(taskId!, data)
+      await mockApi.updateUploadTask(taskId!, data)
       navigate(`/task/${taskId}`)
     } catch (error) {
       setFormError(error instanceof Error ? error.message : '保存失败')
