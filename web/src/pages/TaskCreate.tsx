@@ -1,132 +1,141 @@
-import { FC, useEffect, useState } from 'react'
-import { useForm, Controller } from 'react-hook-form'
+import { FC, useEffect, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+
+import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import {
+  Alert,
   Box,
-  TextField,
   Button,
-  Paper,
-  Typography,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Chip,
+  FormControl,
+  Grid,
   IconButton,
+  InputLabel,
+  MenuItem,
   OutlinedInput,
-  SelectChangeEvent,
-  Alert
-} from '@mui/material'
-import { Add as AddIcon, Delete as DeleteIcon } from '@mui/icons-material'
-import { useAppDispatch } from '../store'
-import { mockApi } from '../services/mockApi'
-import { useNavigate } from 'react-router-dom'
+  Paper,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
+
+// import { useAppDispatch } from '../store'
+import { mockApi } from '../services/mockApi';
 
 interface FileType {
-  id: string
-  label: string
-  value: string
+  id: string;
+  label: string;
+  value: string;
 }
 
 interface FormField {
-  id: string
-  label: string
-  type: string
-  required: string
+  id: string;
+  label: string;
+  type: string;
+  required: string;
 }
 
 interface TaskFormData {
-  title: string
-  description: string
-  deadline: string
-  fileTypes: string[]
-  maxFiles: number
-  formFields: FormField[]
+  title: string;
+  description: string;
+  deadline: string;
+  fileTypes: string[];
+  maxFiles: number;
+  formFields: FormField[];
 }
 
 const TaskCreate: FC = () => {
-  const [availableFileTypes, setAvailableFileTypes] = useState<FileType[]>([])
-  const [loading, setLoading] = useState(false)
-  const [formError, setFormError] = useState<string | null>(null)
-  
-  const { control, handleSubmit, watch, setValue, setError } = useForm<TaskFormData>({
-    defaultValues: {
-      title: '',
-      description: '',
-      deadline: '',
-      fileTypes: [],
-      maxFiles: 1,
-      formFields: []
-    }
-  })
-  const dispatch = useAppDispatch()
-  const formFields = watch('formFields')
-  const navigate = useNavigate()
+  const [availableFileTypes, setAvailableFileTypes] = useState<FileType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const { control, handleSubmit, watch, setValue, setError } =
+    useForm<TaskFormData>({
+      defaultValues: {
+        title: '',
+        description: '',
+        deadline: '',
+        fileTypes: [],
+        maxFiles: 1,
+        formFields: [],
+      },
+    });
+  // const dispatch = useAppDispatch()
+  const formFields = watch('formFields');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadFileTypes = async () => {
       try {
-        const types = await mockApi.getFileTypes()
-        setAvailableFileTypes(types)
+        const types = await mockApi.getFileTypes();
+        setAvailableFileTypes(types);
       } catch (error) {
-        console.error('Failed to load file types:', error)
-        setFormError('加载文件类型失败')
+        console.error('Failed to load file types:', error);
+        setFormError('加载文件类型失败');
       }
-    }
-    loadFileTypes()
-  }, [])
+    };
+    loadFileTypes();
+  }, []);
 
   const onSubmit = async (data: TaskFormData) => {
     try {
       if (!Array.isArray(data.fileTypes) || data.fileTypes.length === 0) {
-        throw new Error('请选择至少一种文件类型')
+        throw new Error('请选择至少一种文件类型');
       }
 
       if (!Array.isArray(data.formFields)) {
-        data.formFields = []
+        data.formFields = [];
       }
 
       if (!data.title?.trim()) {
-        throw new Error('请输入任务标题')
+        throw new Error('请输入任务标题');
       }
 
       if (!data.deadline) {
-        throw new Error('请选择截止日期')
+        throw new Error('请选择截止日期');
       }
 
       if (!data.maxFiles || data.maxFiles < 1) {
-        throw new Error('请设置有效的最大文件数')
+        throw new Error('请设置有效的最大文件数');
       }
 
-      setLoading(true)
-      const result = await mockApi.createTask(data)
-      console.log('Task created:', result)
-      navigate('/')
+      setLoading(true);
+      const result = await mockApi.createTask(data);
+      console.log('Task created:', result);
+      navigate('/');
     } catch (error) {
-      setFormError(error instanceof Error ? error.message : '创建任务失败')
+      setFormError(error instanceof Error ? error.message : '创建任务失败');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const addFormField = () => {
     const newField: FormField = {
       id: Date.now().toString(),
       label: '',
       type: 'text',
-      required: 'false'
-    }
-    setValue('formFields', [...formFields, newField])
-  }
+      required: 'false',
+    };
+    setValue('formFields', [...formFields, newField]);
+  };
 
   const removeFormField = (id: string) => {
-    setValue('formFields', formFields.filter(field => field.id !== id))
-  }
+    setValue(
+      'formFields',
+      formFields.filter(field => field.id !== id),
+    );
+  };
 
   return (
     <Paper sx={{ p: 3 }}>
       {formError && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setFormError(null)}>
+        <Alert
+          severity="error"
+          sx={{ mb: 2 }}
+          onClose={() => setFormError(null)}
+        >
           {formError}
         </Alert>
       )}
@@ -219,22 +228,26 @@ const TaskCreate: FC = () => {
                     multiple
                     value={Array.isArray(field.value) ? field.value : []}
                     input={<OutlinedInput label="允许的文件类型" />}
-                    renderValue={(selected) => (
+                    renderValue={selected => (
                       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                        {(Array.isArray(selected) ? selected : []).map((value) => {
-                          const fileType = availableFileTypes.find(type => type.value === value)
-                          return (
-                            <Chip 
-                              key={value} 
-                              label={fileType?.label || value} 
-                              size="small"
-                            />
-                          )
-                        })}
+                        {(Array.isArray(selected) ? selected : []).map(
+                          value => {
+                            const fileType = availableFileTypes.find(
+                              type => type.value === value,
+                            );
+                            return (
+                              <Chip
+                                key={value}
+                                label={fileType?.label || value}
+                                size="small"
+                              />
+                            );
+                          },
+                        )}
                       </Box>
                     )}
                   >
-                    {availableFileTypes.map((type) => (
+                    {availableFileTypes.map(type => (
                       <MenuItem key={type.id} value={type.value}>
                         {type.label}
                       </MenuItem>
@@ -258,7 +271,10 @@ const TaskCreate: FC = () => {
               </IconButton>
             </Typography>
             {formFields.map((field, index) => (
-              <Box key={field.id} sx={{ mb: 2, p: 2, border: '1px solid #eee', borderRadius: 1 }}>
+              <Box
+                key={field.id}
+                sx={{ mb: 2, p: 2, border: '1px solid #eee', borderRadius: 1 }}
+              >
                 <Grid container spacing={2} alignItems="center">
                   <Grid item xs={12} md={5}>
                     <Controller
@@ -329,7 +345,7 @@ const TaskCreate: FC = () => {
         </Grid>
       </Box>
     </Paper>
-  )
-}
+  );
+};
 
-export default TaskCreate 
+export default TaskCreate;

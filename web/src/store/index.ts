@@ -1,17 +1,2 @@
-import { configureStore } from '@reduxjs/toolkit'
-import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
-import taskReducer from './slices/taskSlice'
-import downloadReducer from './slices/downloadSlice'
-
-export const store = configureStore({
-  reducer: {
-    task: taskReducer,
-    download: downloadReducer,
-  },
-})
-
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
-
-export const useAppDispatch: () => AppDispatch = useDispatch
-export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector 
+export * from './taskStore'
+export * from './downloadStore'

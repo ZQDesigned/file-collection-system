@@ -3,15 +3,16 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { ThemeProvider, CssBaseline, GlobalStyles } from '@mui/material'
 import { createTheme, alpha } from '@mui/material/styles'
 
-import MainLayout from './layouts/MainLayout'
+import MainLayout from './layout'
 import Home from './pages/Home'
 import TaskCreate from './pages/TaskCreate'
 import TaskSubmit from './pages/TaskSubmit'
 import TaskDetail from './pages/TaskDetail'
 import TaskEdit from './pages/TaskEdit'
-import DownloadTasks from './pages/DownloadTasks'
+import DownloadTasks from './pages/Download'
 import SubmissionDetail from './pages/SubmissionDetail'
 import SubmissionView from './pages/SubmissionView'
+import { RoutePath } from './shared/enum'
 
 // 创建 MD3 风格主题
 const theme = createTheme({
@@ -111,15 +112,15 @@ const App: FC = () => {
       <GlobalStyles styles={globalStyles} />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<MainLayout />}>
+          <Route path={RoutePath.Home} element={<MainLayout />}>
             <Route index element={<Home />} />
-            <Route path="create" element={<TaskCreate />} />
-            <Route path="task/:taskId" element={<TaskDetail />} />
-            <Route path="edit/:taskId" element={<TaskEdit />} />
-            <Route path="submit/:taskId" element={<TaskSubmit />} />
-            <Route path="downloads" element={<DownloadTasks />} />
-            <Route path="submission/:taskId/:submissionId" element={<SubmissionDetail />} />
-            <Route path="submission-view/:taskId/:token" element={<SubmissionView />} />
+            <Route path={RoutePath.Create} element={<TaskCreate />} />
+            <Route path={`${RoutePath.TaskDetailBase}/:taskId`} element={<TaskDetail />} />
+            <Route path={`${RoutePath.TaskEditBase}/:taskId`} element={<TaskEdit />} />
+            <Route path={`${RoutePath.TaskSubmitBase}/:taskId`} element={<TaskSubmit />} />
+            <Route path={RoutePath.Downloads} element={<DownloadTasks />} />
+            <Route path={`${RoutePath.SubmissionDetailBase}/:taskId/:submissionId`} element={<SubmissionDetail />} />
+            <Route path={`${RoutePath.SubmissionViewBase}/:taskId/:token`} element={<SubmissionView />} />
           </Route>
         </Routes>
       </BrowserRouter>

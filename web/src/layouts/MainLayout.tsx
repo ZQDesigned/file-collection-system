@@ -26,7 +26,7 @@ import {
   Location,
 } from "react-router-dom";
 import { useAppSelector } from "../store";
-import { selectPendingTasksCount } from "../store/slices/downloadSlice";
+import { selectPendingTasksCount } from "../store/downloadStore";
 
 const { Header, Sider, Content } = Layout;
 const { useBreakpoint } = Grid;
