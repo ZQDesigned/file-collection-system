@@ -75,3 +75,4 @@ gradle.properties
 spring.log
 logs/
 *.log
+/services/*/bin/
