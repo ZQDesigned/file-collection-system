@@ -31,7 +31,6 @@ const statusLabels = {
   failed: '失败',
 } as const;
 
-
 export const useTableColumn: (params: {
   handleRetry: (task: DownloadTask) => void;
   handleCopyError: (error: string) => void;
