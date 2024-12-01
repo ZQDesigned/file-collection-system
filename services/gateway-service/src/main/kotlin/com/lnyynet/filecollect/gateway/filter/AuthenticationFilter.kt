@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 
-@Component
+
 class AuthenticationFilter(
     private val jwtService: JwtService,
     private val securityProperties: SecurityProperties

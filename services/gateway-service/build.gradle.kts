@@ -4,10 +4,12 @@ plugins {
 
 dependencies {
     implementation(project(":services:common"))
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
     
     // Spring Cloud Gateway
     implementation("org.springframework.cloud:spring-cloud-starter-gateway")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+    implementation("io.grpc:grpc-netty:1.68.2")
     
     // OpenAPI
     implementation("org.springdoc:springdoc-openapi-starter-webflux-ui:${Versions.springDoc}")

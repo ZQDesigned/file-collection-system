@@ -20,7 +20,7 @@ class FileServiceClient {
             .build()
             
         val response = fileStub.uploadFile(request)
-        return response.url
+        return response.path
     }
 
     suspend fun getFile(path: String): Pair<ByteArray, String> {

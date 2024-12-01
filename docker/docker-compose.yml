@@ -1,4 +1,4 @@
-version: '3.8'
+# 移除 version 属性
 
 services:
   # 前端服务
@@ -16,7 +16,7 @@ services:
       
   # 服务发现
   discovery-service:
-    build: ../services/discovery-service
+    image: discovery-service:latest
     ports:
       - "8761:8761"
     networks:
@@ -26,6 +26,13 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
       
   # 网关服务
   gateway-service:
@@ -45,7 +52,9 @@ services:
       
   # 认证服务
   auth-service:
-    build: ../services/auth-service
+    image: auth-service:latest
+    ports:
+      - "8081:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
@@ -58,6 +67,11 @@ services:
         condition: service_healthy
     networks:
       - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
       
   # 文件服务
   file-service:
@@ -191,6 +205,18 @@ services:
       - "3000:3000"
     networks:
       - backend
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   frontend:

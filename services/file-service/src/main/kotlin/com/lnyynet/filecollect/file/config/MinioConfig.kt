@@ -10,10 +10,10 @@ class MinioConfig {
     @Value("\${minio.endpoint}")
     private lateinit var endpoint: String
     
-    @Value("\${minio.accessKey}")
+    @Value("\${minio.access-key}")
     private lateinit var accessKey: String
     
-    @Value("\${minio.secretKey}")
+    @Value("\${minio.secret-key}")
     private lateinit var secretKey: String
     
     @Bean
